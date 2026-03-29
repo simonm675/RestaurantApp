@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-140 0 1260 760" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+  <title id="title">Pizzeria Uno Logo</title>
+  <desc id="desc">Pizzeria Uno wordmark with chili icon and since 2002 text.</desc>
+
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8a6420" />
+      <stop offset="60%" stop-color="#694b14" />
+      <stop offset="100%" stop-color="#52380c" />
+    </linearGradient>
+    <linearGradient id="pepper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8f230f" />
+      <stop offset="100%" stop-color="#5f1408" />
+    </linearGradient>
+    <linearGradient id="pepperGreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17743f" />
+      <stop offset="100%" stop-color="#0d4f29" />
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1f1304" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <g fill="none" stroke="#9b7a36" stroke-width="4" opacity="0.9">
+    <path d="M5 257 C148 224, 262 222, 300 224" />
+    <path d="M680 224 C735 223, 845 225, 975 257" />
+    <path d="M295 224 C288 120, 357 40, 490 40 C625 40, 691 123, 685 224" />
+  </g>
+
+  <text x="165" y="176" text-anchor="middle" font-size="52" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">SEIT</text>
+  <text x="812" y="176" text-anchor="middle" font-size="52" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">2002</text>
+
+  <g transform="translate(490 132)">
+    <path d="M-157 5 C-105 -15, -40 -14, 18 -47 C52 -66, 92 -72, 124 -54 C113 -41, 96 -29, 88 -11 C79 8, 57 22, 30 29 C2 36, -35 37, -77 30 C-123 22, -155 20, -157 5 Z" fill="url(#pepper)" filter="url(#softShadow)" />
+    <path d="M77 -53 C94 -71, 118 -78, 136 -72 C141 -63, 136 -50, 124 -44 C111 -38, 96 -36, 86 -40 Z" fill="url(#pepperGreen)" />
+    <path d="M-10 17 C34 14, 63 4, 92 -15" stroke="#2f0f08" stroke-width="4" opacity="0.8" />
+  </g>
+
+  <text x="490" y="452" text-anchor="middle" font-size="248" font-family="Georgia, 'Times New Roman', serif" letter-spacing="8" fill="url(#gold)">PIZZERIA</text>
+  <text x="490" y="682" text-anchor="middle" font-size="248" font-family="Georgia, 'Times New Roman', serif" letter-spacing="8" fill="url(#gold)">UNO</text>
+
+  <line x1="12" y1="747" x2="342" y2="747" stroke="url(#gold)" stroke-width="4" />
+  <line x1="638" y1="747" x2="968" y2="747" stroke="url(#gold)" stroke-width="4" />
+  <text x="490" y="762" text-anchor="middle" font-size="58" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">LEMFORDE</text>
+</svg>
+
