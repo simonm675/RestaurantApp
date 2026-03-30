@@ -46,4 +46,12 @@ export const userApi = {
   updateFavorites: (favorites) => api.put("/users/favorites", { favorites }),
 };
 
+export const reservationApi = {
+  create: (payload) => api.post("/reservations", payload),
+  getMine: () => api.get("/reservations/mine"),
+  cancelMine: (id) => api.put(`/reservations/${id}/cancel`),
+  getAll: (params) => api.get("/reservations/admin", { params }),
+  updateStatus: (id, payload) => api.put(`/reservations/${id}/status`, payload),
+};
+
 export default api;

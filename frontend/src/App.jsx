@@ -22,6 +22,7 @@ const KitchenPage = lazy(() => import("./pages/KitchenPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const ImpressumPage = lazy(() => import("./pages/ImpressumPage"));
 const OrderTrackingPage = lazy(() => import("./pages/OrderTrackingPage"));
+const ReservationPage = lazy(() => import("./pages/ReservationPage"));
 
 function App() {
   const { pathname } = useLocation();
@@ -43,6 +44,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/reservierung" element={<ReservationPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-tracking" element={<OrderTrackingPage />} />

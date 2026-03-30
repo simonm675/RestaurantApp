@@ -5,7 +5,7 @@ import DishCard from "../components/DishCard";
 import { DeliveryTypeBadge, PriorityBadge, StatusBadge, describeOrderProgress } from "../components/OrderBadges";
 import Spinner from "../components/Spinner";
 import KitchenPage from "./KitchenPage";
-import { menuApi, orderApi, userApi } from "../services/api";
+import { menuApi, orderApi, reservationApi, userApi } from "../services/api";
 
 const initialForm = {
   name: "",
@@ -78,6 +78,7 @@ const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("orders");
   const [menuItems, setMenuItems] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [users, setUsers] = useState([]);
   const [summary, setSummary] = useState({
     totalOrders: 0,
@@ -127,14 +128,16 @@ const AdminPage = () => {
         params.deliveryType = "pickup";
       }
 
-      const [menuRes, ordersRes, usersRes, summaryRes] = await Promise.all([
+      const [menuRes, ordersRes, reservationsRes, usersRes, summaryRes] = await Promise.all([
         menuApi.getAll(),
         orderApi.getAll(params),
+        reservationApi.getAll({ status: "all" }),
         userApi.getAll(),
         orderApi.getSummary(),
       ]);
       setMenuItems(menuRes.data);
       setOrders(ordersRes.data);
+      setReservations(Array.isArray(reservationsRes.data) ? reservationsRes.data : []);
       setUsers(usersRes.data);
       setSummary(summaryRes.data);
       setLastUpdatedAt(new Date());
@@ -300,7 +303,18 @@ const AdminPage = () => {
     delivery: deliveryBoardOrders.length,
     pickup: pickupBoardOrders.length,
     menu: menuItems.length,
+    reservations: reservations.length,
     users: users.length,
+  };
+
+  const setReservationStatus = async (id, status) => {
+    try {
+      await reservationApi.updateStatus(id, { status });
+      toast.success("Reservierung aktualisiert");
+      loadAdminData({ silent: true });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Reservierung konnte nicht aktualisiert werden");
+    }
   };
 
   if (loading) return <Spinner label="Restaurant-Bereich wird geladen" />;
@@ -313,7 +327,7 @@ const AdminPage = () => {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-        <article className="rounded-xl border-2 border-gradient-to-br from-amber-200 to-amber-200 bg-gradient-to-br from-amber-50 to-amber-50/50 p-4 dark:border-amber-800/40 dark:from-amber-950/30 dark:to-amber-950/10">
+        <article className="rounded-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-amber-50/50 p-4 dark:border-amber-800/40 dark:from-amber-950/30 dark:to-amber-950/10">
           <p className="text-xs font-bold uppercase tracking-wide text-amber-800 dark:text-amber-400">💰 Heute Umsatz</p>
           <p className="mt-1.5 text-2xl font-black text-amber-700 dark:text-amber-300">{summary.revenueToday.toFixed(2)} €</p>
         </article>
@@ -346,6 +360,7 @@ const AdminPage = () => {
           ["delivery", "🚗 Delivery Board"],
           ["pickup", "🏪 Abholung"],
           ["menu", "🍕 Gerichte"],
+          ["reservations", "🪑 Reservierungen"],
           ["users", "👥 Benutzer"],
         ].map(([key, label]) => (
           <button
@@ -754,6 +769,50 @@ const AdminPage = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {activeTab === "reservations" && (
+        <div className="space-y-3">
+          {reservations.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
+              Keine Reservierungen vorhanden.
+            </p>
+          ) : (
+            reservations.map((entry) => (
+              <article key={entry._id} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                      {entry.name} • {entry.partySize} Personen
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {new Date(entry.reservationAt).toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" })}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {entry.phone || "-"} • {entry.email || "-"}
+                    </p>
+                  </div>
+                  <select
+                    value={entry.status}
+                    onChange={(event) => setReservationStatus(entry._id, event.target.value)}
+                    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    <option value="pending">pending</option>
+                    <option value="confirmed">confirmed</option>
+                    <option value="declined">declined</option>
+                    <option value="cancelled">cancelled</option>
+                    <option value="completed">completed</option>
+                  </select>
+                </div>
+                {entry.specialRequests && (
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    Hinweis: {entry.specialRequests}
+                  </p>
+                )}
+              </article>
+            ))
+          )}
         </div>
       )}
     </div>

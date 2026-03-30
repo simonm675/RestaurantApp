@@ -7,10 +7,10 @@ import { useLanguage } from "../context/LanguageContext";
 import { menuApi } from "../services/api";
 
 const deliveryAreas = [
-  "Lemfoerde",
+  "Lemförde",
   "Stemshorn",
   "Dielingen",
-  "Huede",
+  "Hüde",
   "Brockum",
   "Quernheim",
   "Marl",
@@ -18,12 +18,12 @@ const deliveryAreas = [
 ];
 
 const menuHighlights = [
-  "Panini Hackfleisch-Zwiebeln-Kaese (91)",
+  "Panini Hackfleisch-Zwiebeln-Käse (91)",
   "Mozzarella Caprese (36)",
   "Aperol Spritz",
   "Bruschetta (41)",
-  "Pizzabrot Tomate-Mozzarella-Basilikum-Olivenoel (98)",
-  "Panini Schinken-Kaese (74)",
+  "Pizzabrot Tomate-Mozzarella-Basilikum-Olivenöl (98)",
+  "Panini Schinken-Käse (74)",
   "Fassbrause",
   "Pizza Italia (23)",
 ];
@@ -84,13 +84,16 @@ const HomePage = () => {
             <Link to="/menu" className="inline-flex items-center gap-2 rounded-full border-2 border-white text-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold transition hover:bg-white/20">
               <span>🍽️</span> {t("viewMenu")}
             </Link>
+            <Link to="/reservierung" className="inline-flex items-center gap-2 rounded-full border-2 border-white/80 bg-black/20 text-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold transition hover:bg-black/30">
+              <span>🪑</span> Tisch reservieren
+            </Link>
           </div>
         </div>
       </section>
 
       <section className="grid gap-5 lg:grid-cols-2">
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Oeffnungszeiten</h2>
+          <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Öffnungszeiten</h2>
           <div className="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-200">
             <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60">
               <p className="font-bold uppercase tracking-wide">Mittwoch bis Samstag</p>
@@ -120,7 +123,7 @@ const HomePage = () => {
             </div>
             <div className="rounded-xl border border-amber-300 p-3 dark:border-amber-700">
               <p className="text-sm font-bold text-amber-800 dark:text-amber-300">Mindestbestellwert: 25 EUR</p>
-              <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">Bitte ab 10 Gerichten fruehzeitig vorbestellen.</p>
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">Bitte ab 10 Gerichten frühzeitig vorbestellen.</p>
             </div>
           </div>
         </article>
@@ -146,13 +149,13 @@ const HomePage = () => {
 
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Telefon & Adresse</h2>
-          <p className="mt-3 text-sm text-slate-700 dark:text-slate-300">Bitte ab 10 Gerichten mind. 1 Tag im Voraus bestellen.</p>
+          <p className="mt-3 text-sm text-slate-700 dark:text-slate-300">Bitte ab 10 Gerichten mindestens 1 Tag im Voraus bestellen.</p>
           <div className="mt-4 space-y-2">
             <a href="tel:05443203770" className="block text-lg font-bold text-amber-700 hover:text-amber-800 dark:text-amber-300 dark:hover:text-amber-200">
               05443 / 20 37 70
             </a>
             <p className="text-sm text-slate-700 dark:text-slate-200">Hauptstr. 80</p>
-            <p className="text-sm text-slate-700 dark:text-slate-200">49448 Lemfoerde</p>
+            <p className="text-sm text-slate-700 dark:text-slate-200">49448 Lemförde</p>
           </div>
           <a
             href="https://www.google.com/maps/search/?api=1&query=Pizzeria+Uno+Hauptstr.+80+49448+Lemfoerde"
@@ -160,12 +163,12 @@ const HomePage = () => {
             rel="noreferrer"
             className="mt-4 inline-flex items-center rounded-full bg-amber-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-amber-800"
           >
-            Google Maps oeffnen
+            Google Maps öffnen
           </a>
           <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
             <iframe
               title="Pizzeria Uno Google Maps"
-              src="https://www.google.com/maps?q=Pizzeria+Uno+Hauptstr.+80+49448+Lemfoerde&output=embed"
+              src="https://www.google.com/maps?q=Pizzeria+Uno+Hauptstr.+80+49448+Lemförde&output=embed"
               width="100%"
               height="280"
               style={{ border: 0 }}
@@ -179,7 +182,7 @@ const HomePage = () => {
           <h2 className="text-xl font-black text-red-800 dark:text-red-300">Aktuelles</h2>
           <p className="mt-3 text-sm font-semibold text-red-700 dark:text-red-300">Hunde sind bei uns nicht erlaubt.</p>
           <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">
-            Wir haben vom 18.03.2026 bis zum 26.03.2026 geschlossen. Am 27.03.2026 sind wir wieder fuer Euch da.
+            Wir haben vom 18.03.2026 bis zum 26.03.2026 geschlossen. Am 27.03.2026 sind wir wieder für euch da.
           </p>
         </article>
 
@@ -198,11 +201,11 @@ const HomePage = () => {
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">Restaurant</h2>
         <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
-          Das denkmalgeschuetzte Gebaeude und das stimmungsvolle Interieur laden zu einem unvergesslichen Abend ein.
-          Mehr als 60 Plaetze im Gewoelbekeller des Amtshofes haben wir fuer unsere Gaeste liebevoll hergerichtet.
-          Im Sommer koennen Sie an rund 30 Aussensitzplaetzen das historische Gebaeude und den neu errichteten
-          Buergerpark auf sich wirken lassen. Dazu servieren wir Ihnen mediterrane Koestlichkeiten von Salat bis Pizza,
-          Pasta und Paninis. Fuer groessere Veranstaltungen bieten wir gerne besondere Angebote an.
+          Das denkmalgeschützte Gebäude und das stimmungsvolle Interieur laden zu einem unvergesslichen Abend ein.
+          Mehr als 60 Plätze im Gewölbekeller des Amtshofes haben wir für unsere Gäste liebevoll hergerichtet.
+          Im Sommer können Sie an rund 30 Außensitzplätzen das historische Gebäude und den neu errichteten
+          Bürgerpark auf sich wirken lassen. Dazu servieren wir Ihnen mediterrane Köstlichkeiten von Salat bis Pizza,
+          Pasta und Panini. Für größere Veranstaltungen bieten wir gerne besondere Angebote an.
         </p>
       </section>
 

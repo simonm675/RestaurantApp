@@ -1,4 +1,4 @@
-import { Home, Menu, ShoppingBag, User } from "lucide-react";
+import { CalendarDays, Home, Menu, ShoppingBag, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -73,7 +73,7 @@ const MobileBottomNav = () => {
   }, [isAuthenticated]);
 
   const navItemCount = useMemo(() => {
-    let count = 3;
+    let count = 4;
     if (totals.count > 0) count += 1;
     if (hasOpenOrder) count += 1;
     if (isAdmin) count += 1;
@@ -95,6 +95,10 @@ const MobileBottomNav = () => {
         <NavLink to="/menu" className={itemClass}>
           <Menu size={18} />
           Menü
+        </NavLink>
+        <NavLink to="/reservierung" className={itemClass}>
+          <CalendarDays size={18} />
+          Tisch
         </NavLink>
 
         {totals.count > 0 && (

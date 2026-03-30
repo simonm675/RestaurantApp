@@ -7,6 +7,7 @@ const translations = {
     // Navbar
     home: "Startseite",
     menu: "Menü",
+    reservation: "Reservierung",
     cart: "Warenkorb",
     profile: "Profil",
     admin: "Restaurant-Bereich",
@@ -202,6 +203,7 @@ const translations = {
     // Navbar
     home: "Home",
     menu: "Menu",
+    reservation: "Reservation",
     cart: "Cart",
     profile: "Profile",
     admin: "Restaurant Area",

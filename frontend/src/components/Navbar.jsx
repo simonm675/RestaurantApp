@@ -76,6 +76,7 @@ const Navbar = () => {
   const navItems = useMemo(() => ([
     { to: "/", label: t("home") },
     { to: "/menu", label: t("menu") },
+    { to: "/reservierung", label: t("reservation") },
     ...(isAuthenticated ? [{ to: "/profile", label: t("profile") }] : []),
     ...(hasOpenOrder ? [{ to: "/order-tracking", label: "Tracking" }] : []),
   ]), [hasOpenOrder, isAuthenticated, t]);

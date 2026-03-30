@@ -13,6 +13,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const menuRoutes = require("./src/routes/menuRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
 const userRoutes = require("./src/routes/userRoutes");
+const reservationRoutes = require("./src/routes/reservationRoutes");
 const { notFound, errorHandler } = require("./src/middleware/errorMiddleware");
 
 const app = express();
@@ -57,6 +58,7 @@ app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/reservations", reservationRoutes);
 
 // Error Handling
 app.use(notFound);
