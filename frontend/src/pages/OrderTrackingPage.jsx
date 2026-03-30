@@ -178,30 +178,47 @@ const OrderTrackingPage = () => {
   }, [location.state]);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-
     const fetchLatest = async () => {
       setLoading(true);
       try {
-        const { data } = await orderApi.getMine();
-        const fallback = pickNewestRelevantOrder(data);
-        if (!fallback) {
-          setOrder(null);
-          localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+        if (isAuthenticated) {
+          const { data } = await orderApi.getMine();
+          const fallback = pickNewestRelevantOrder(data);
+          if (!fallback) {
+            setOrder(null);
+            localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+            return;
+          }
+
+          if (order?._id) {
+            const exact = data.find((entry) => entry._id === order._id);
+            if (exact) {
+              if (ACTIVE_ORDER_STATUSES.includes(exact.status)) {
+                setOrder(exact);
+                localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(exact));
+              } else {
+                setOrder(null);
+                localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+              }
+              return;
+            }
+          }
+
+          setOrder(fallback);
+          localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(fallback));
           return;
         }
 
-        if (order?._id) {
-          const exact = data.find((entry) => entry._id === order._id);
-          if (exact) {
-            setOrder(exact);
-            localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(exact));
-            return;
-          }
-        }
+        if (!order?._id) return;
 
-        setOrder(fallback);
-        localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(fallback));
+        const { data } = await orderApi.getTracking(order._id);
+        if (ACTIVE_ORDER_STATUSES.includes(data?.status)) {
+          setOrder(data);
+          localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(data));
+        } else {
+          setOrder(null);
+          localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+        }
       } catch {
         // Keep the latest known snapshot.
       } finally {

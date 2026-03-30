@@ -33,6 +33,7 @@ export const menuApi = {
 export const orderApi = {
   create: (payload) => api.post("/orders", payload),
   getMine: () => api.get("/orders"),
+  getTracking: (id) => api.get(`/orders/track/${id}`),
   getAll: (params) => api.get("/orders/admin", { params }),
   getSummary: () => api.get("/orders/admin/summary"),
   updateStatus: (id, payload) => api.put(`/orders/${id}/status`, payload),

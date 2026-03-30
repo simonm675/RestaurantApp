@@ -222,6 +222,31 @@ const getMyOrders = async (req, res, next) => {
   }
 };
 
+const getOrderForTracking = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      res.status(404);
+      throw new Error("Order not found");
+    }
+
+    if (req.user) {
+      const isAdmin = req.user.role === "admin";
+      const isOwner = String(order.userId) === String(req.user._id);
+
+      if (!isAdmin && !isOwner) {
+        res.status(403);
+        throw new Error("Not authorized to access this order");
+      }
+    }
+
+    return res.json(order);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 const getAllOrders = async (req, res, next) => {
   try {
     const { status, deliveryType, priority, search, lateOnly } = req.query;
@@ -405,6 +430,7 @@ const getAdminOrderSummary = async (req, res, next) => {
 module.exports = {
   createOrder,
   getMyOrders,
+  getOrderForTracking,
   getAllOrders,
   getAdminOrderSummary,
   updateOrderStatus,

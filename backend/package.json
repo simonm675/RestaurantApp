@@ -8,6 +8,7 @@
     "start": "node server.js",
     "seed": "node src/seed/seed.js",
     "create-admin": "node src/seed/create-admin.js",
+    "fix-menu-images": "node src/seed/fix-menu-images.js",
     "test": "echo \"No tests configured\""
   },
   "keywords": [],

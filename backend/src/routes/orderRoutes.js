@@ -2,6 +2,7 @@ const express = require("express");
 const {
   createOrder,
   getMyOrders,
+  getOrderForTracking,
   getAllOrders,
   getAdminOrderSummary,
   updateOrderStatus,
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.post("/", optionalProtect, orderCreate, createOrder);
 router.get("/", protect, getMyOrders);
+router.get("/track/:id", optionalProtect, getOrderForTracking);
 router.get("/admin/summary", protect, adminOnly, getAdminOrderSummary);
 router.get("/admin", protect, adminOnly, getAllOrders);
 router.put("/:id/status", protect, adminOnly, updateOrderStatus);

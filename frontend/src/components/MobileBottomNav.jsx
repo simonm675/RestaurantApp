@@ -8,6 +8,7 @@ import { orderApi } from "../services/api";
 import { useUI } from "../context/UIContext";
 
 const ACTIVE_ORDER_STATUSES = ["pending", "preparing", "ready-for-pickup", "out-for-delivery"];
+const LAST_ORDER_STORAGE_KEY = "restaurantLastPlacedOrder";
 
 const MobileBottomNav = () => {
   const { totals } = useCart();
@@ -17,20 +18,46 @@ const MobileBottomNav = () => {
   const [hasOpenOrder, setHasOpenOrder] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setHasOpenOrder(false);
-      return;
-    }
-
     let isMounted = true;
 
     const loadOpenOrderState = async () => {
+      if (isAuthenticated) {
+        try {
+          const { data } = await orderApi.getMine();
+          if (!isMounted) return;
+          const hasActive = Array.isArray(data)
+            && data.some((entry) => ACTIVE_ORDER_STATUSES.includes(entry?.status));
+          setHasOpenOrder(hasActive);
+        } catch {
+          if (isMounted) setHasOpenOrder(false);
+        }
+        return;
+      }
+
       try {
-        const { data } = await orderApi.getMine();
+        const saved = localStorage.getItem(LAST_ORDER_STORAGE_KEY);
+        if (!saved) {
+          if (isMounted) setHasOpenOrder(false);
+          return;
+        }
+
+        const parsed = JSON.parse(saved);
+        if (!parsed?._id) {
+          localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+          if (isMounted) setHasOpenOrder(false);
+          return;
+        }
+
+        const { data } = await orderApi.getTracking(parsed._id);
         if (!isMounted) return;
-        const hasActive = Array.isArray(data)
-          && data.some((entry) => ACTIVE_ORDER_STATUSES.includes(entry?.status));
-        setHasOpenOrder(hasActive);
+
+        if (ACTIVE_ORDER_STATUSES.includes(data?.status)) {
+          setHasOpenOrder(true);
+          localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(data));
+        } else {
+          setHasOpenOrder(false);
+          localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+        }
       } catch {
         if (isMounted) setHasOpenOrder(false);
       }
@@ -48,9 +75,9 @@ const MobileBottomNav = () => {
   const navItemCount = useMemo(() => {
     let count = 3;
     if (totals.count > 0) count += 1;
-    if (isAuthenticated && hasOpenOrder) count += 1;
+    if (hasOpenOrder) count += 1;
     return count;
-  }, [hasOpenOrder, isAuthenticated, totals.count]);
+  }, [hasOpenOrder, totals.count]);
 
   const itemClass = ({ isActive }) =>
     `flex flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-xs font-semibold transition ${
@@ -84,7 +111,7 @@ const MobileBottomNav = () => {
           </button>
         )}
 
-        {isAuthenticated && hasOpenOrder && (
+        {hasOpenOrder && (
           <NavLink to="/order-tracking" className={itemClass}>
             <ShoppingBag size={18} />
             Tracking

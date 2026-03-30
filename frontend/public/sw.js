@@ -1,4 +1,4 @@
-const CACHE_NAME = "restaurant-app-v1";
+const CACHE_NAME = "restaurant-app-v2";
 const APP_SHELL_FILES = ["/", "/index.html", "/manifest.webmanifest", "/favicon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -34,8 +34,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Keep API requests out of cache to avoid stale order/auth data.
-  if (url.pathname.startsWith("/api")) {
+  // Keep API and real-time channels out of cache to avoid stale order/auth data.
+  if (url.pathname.startsWith("/api") || url.pathname.startsWith("/socket.io")) {
+    return;
+  }
+
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(() => caches.match("/index.html"))
+    );
+    return;
+  }
+
+  const isStaticAsset = /\.(?:js|css|png|jpg|jpeg|svg|webp|ico|woff2?)$/i.test(url.pathname);
+  if (!isStaticAsset) {
     return;
   }
 

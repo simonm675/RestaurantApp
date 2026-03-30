@@ -9,6 +9,7 @@ import { useUI } from "../context/UIContext";
 import pizzeriaLogo from "../assets/pizzeria-uno-logo.svg";
 
 const ACTIVE_ORDER_STATUSES = ["pending", "preparing", "ready-for-pickup", "out-for-delivery"];
+const LAST_ORDER_STORAGE_KEY = "restaurantLastPlacedOrder";
 
 const Navbar = () => {
   const { totals } = useCart();
@@ -18,20 +19,46 @@ const Navbar = () => {
   const [hasOpenOrder, setHasOpenOrder] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setHasOpenOrder(false);
-      return;
-    }
-
     let isMounted = true;
 
     const loadOpenOrderState = async () => {
+      if (isAuthenticated) {
+        try {
+          const { data } = await orderApi.getMine();
+          if (!isMounted) return;
+          const hasActive = Array.isArray(data)
+            && data.some((entry) => ACTIVE_ORDER_STATUSES.includes(entry?.status));
+          setHasOpenOrder(hasActive);
+        } catch {
+          if (isMounted) setHasOpenOrder(false);
+        }
+        return;
+      }
+
       try {
-        const { data } = await orderApi.getMine();
+        const saved = localStorage.getItem(LAST_ORDER_STORAGE_KEY);
+        if (!saved) {
+          if (isMounted) setHasOpenOrder(false);
+          return;
+        }
+
+        const parsed = JSON.parse(saved);
+        if (!parsed?._id) {
+          localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+          if (isMounted) setHasOpenOrder(false);
+          return;
+        }
+
+        const { data } = await orderApi.getTracking(parsed._id);
         if (!isMounted) return;
-        const hasActive = Array.isArray(data)
-          && data.some((entry) => ACTIVE_ORDER_STATUSES.includes(entry?.status));
-        setHasOpenOrder(hasActive);
+
+        if (ACTIVE_ORDER_STATUSES.includes(data?.status)) {
+          setHasOpenOrder(true);
+          localStorage.setItem(LAST_ORDER_STORAGE_KEY, JSON.stringify(data));
+        } else {
+          setHasOpenOrder(false);
+          localStorage.removeItem(LAST_ORDER_STORAGE_KEY);
+        }
       } catch {
         if (isMounted) setHasOpenOrder(false);
       }
@@ -50,7 +77,7 @@ const Navbar = () => {
     { to: "/", label: t("home") },
     { to: "/menu", label: t("menu") },
     ...(isAuthenticated ? [{ to: "/profile", label: t("profile") }] : []),
-    ...(isAuthenticated && hasOpenOrder ? [{ to: "/order-tracking", label: "Tracking" }] : []),
+    ...(hasOpenOrder ? [{ to: "/order-tracking", label: "Tracking" }] : []),
   ]), [hasOpenOrder, isAuthenticated, t]);
 
   const linkClasses = ({ isActive }) =>
@@ -74,7 +101,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <nav className="flex flex-wrap items-center gap-1">
+        <nav className="hidden flex-wrap items-center gap-1 lg:flex">
           {navItems.map((item) => (
             <NavLink key={item.to} to={item.to} className={linkClasses}>
               {item.label}
@@ -111,7 +138,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={openCartDrawer}
-              className="relative inline-flex h-10 min-w-12 px-3 items-center justify-center rounded-xl border-2 border-slate-200 text-slate-700 transition hover:bg-slate-100 hover:border-amber-300 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:border-amber-600"
+              className="relative hidden h-10 min-w-12 items-center justify-center rounded-xl border-2 border-slate-200 px-3 text-slate-700 transition hover:border-amber-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-100 dark:hover:border-amber-600 dark:hover:bg-slate-800 lg:inline-flex"
               aria-label={t("cart")}
             >
               <ShoppingCart size={19} strokeWidth={2.1} />
@@ -131,13 +158,13 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="rounded-lg border-2 border-amber-300 px-4 py-2 text-sm font-bold text-amber-700 transition hover:bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/20"
+                className="hidden rounded-lg border-2 border-amber-300 px-4 py-2 text-sm font-bold text-amber-700 transition hover:bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/20 lg:inline-flex"
               >
                 {t("login")}
               </Link>
               <Link
                 to="/register"
-                className="rounded-lg bg-gradient-to-r from-amber-700 to-red-700 px-4 py-2 text-sm font-bold text-white transition hover:shadow-lg hover:from-amber-800 hover:to-red-800"
+                className="hidden rounded-lg bg-gradient-to-r from-amber-700 to-red-700 px-4 py-2 text-sm font-bold text-white transition hover:from-amber-800 hover:to-red-800 hover:shadow-lg lg:inline-flex"
               >
                 {t("register")}
               </Link>

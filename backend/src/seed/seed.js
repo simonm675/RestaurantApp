@@ -51,7 +51,7 @@ const menuSeed = [
     description: "Tomatensoße, Mozzarella, Schinken, Pilze, Artischocke",
     price: 8.00,
     category: "Pizza",
-    image: "https://images.unsplash.com/photo-1548365328-9f547fb0953a?w=900&h=900&fit=crop&auto=format",
+    image: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=900&h=900&fit=crop&auto=format",
     featured: false,
   },
   {
@@ -77,7 +77,7 @@ const menuSeed = [
     description: "Tagliatelle mit Speck, Ei und Parmigiano - cremig und köstlich",
     price: 10.50,
     category: "Pasta",
-    image: "https://images.unsplash.com/photo-1563379091339-03246963d96c?w=900&h=900&fit=crop&auto=format",
+    image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=900&h=900&fit=crop&auto=format",
     featured: true,
   },
   {
