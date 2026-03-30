@@ -13,7 +13,7 @@ const LAST_ORDER_STORAGE_KEY = "restaurantLastPlacedOrder";
 const MobileBottomNav = () => {
   const { totals } = useCart();
   const { openCartDrawer } = useUI();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [hasOpenOrder, setHasOpenOrder] = useState(false);
 
@@ -76,8 +76,9 @@ const MobileBottomNav = () => {
     let count = 3;
     if (totals.count > 0) count += 1;
     if (hasOpenOrder) count += 1;
+    if (isAdmin) count += 1;
     return count;
-  }, [hasOpenOrder, totals.count]);
+  }, [hasOpenOrder, totals.count, isAdmin]);
 
   const itemClass = ({ isActive }) =>
     `flex flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-xs font-semibold transition ${
@@ -115,6 +116,13 @@ const MobileBottomNav = () => {
           <NavLink to="/order-tracking" className={itemClass}>
             <ShoppingBag size={18} />
             Tracking
+          </NavLink>
+        )}
+
+        {isAdmin && (
+          <NavLink to="/admin" className={itemClass}>
+            <ShoppingBag size={18} />
+            Admin
           </NavLink>
         )}
 
