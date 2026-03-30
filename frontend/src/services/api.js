@@ -43,6 +43,7 @@ export const userApi = {
   getAll: () => api.get("/users"),
   getMe: () => api.get("/users/me"),
   updateProfile: (payload) => api.put("/users/profile", payload),
+  updateFavorites: (favorites) => api.put("/users/favorites", { favorites }),
 };
 
 export default api;

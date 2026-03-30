@@ -67,6 +67,12 @@ const userSchema = new mongoose.Schema(
       enum: ["card", "paypal"],
       default: "card",
     },
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MenuItem",
+      },
+    ],
   },
   { timestamps: true }
 );

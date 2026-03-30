@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { DeliveryTypeBadge, StatusBadge, describeOrderProgress } from "../components/OrderBadges";
 import Spinner from "../components/Spinner";
 import { useAuth } from "../context/AuthContext";
+import { useFavorites } from "../context/FavoritesContext";
 import { useUI } from "../context/UIContext";
 import useOrderTimer from "../hooks/useOrderTimer";
 import { orderApi } from "../services/api";
@@ -208,6 +209,7 @@ const OrdersPanel = ({
 
 const ProfilePage = () => {
   const { auth, updateProfile, loading, logout } = useAuth();
+  const { favorites } = useFavorites();
   const { theme, toggleTheme } = useUI();
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
@@ -428,9 +430,18 @@ const ProfilePage = () => {
                     Markiere Gerichte als Favorit und finde sie schneller wieder.
                   </p>
                 </div>
-                <button className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-slate-600 dark:text-slate-200">
-                  <Heart size={16} className="text-red-500" /> Favoriten
-                </button>
+                <div className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-slate-600 dark:text-slate-200">
+                  <Heart size={16} className="text-red-500" /> {favorites.length} Favoriten
+                </div>
+              </div>
+              <div className="mt-3 max-h-36 space-y-1 overflow-y-auto pr-1 text-sm text-slate-600 dark:text-slate-300">
+                {favorites.length === 0 ? (
+                  <p>Noch keine Favoriten gespeichert.</p>
+                ) : (
+                  favorites.map((item) => (
+                    <p key={item._id} className="truncate">• {item.name}</p>
+                  ))
+                )}
               </div>
             </article>
           </section>

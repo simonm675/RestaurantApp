@@ -216,14 +216,10 @@ const DishCard = ({ item, onAdd, adminActions }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [configOpen, setConfigOpen] = useState(false);
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [favorite, setFavorite] = useState(false);
-
-  useEffect(() => {
-    setFavorite(isFavorite(item._id));
-  }, [item._id, isFavorite]);
 
     const optionConfig = useMemo(() => getOptionConfig(item), [item]);
     const [selections, setSelections] = useState(() => buildInitialSelections(optionConfig));
+  const favorite = isFavorite(item._id);
 
   useEffect(() => {
     setSelections(buildInitialSelections(optionConfig));
@@ -351,10 +347,7 @@ const DishCard = ({ item, onAdd, adminActions }) => {
               <div className="ml-auto flex gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    toggleFavorite(item);
-                    setFavorite(!favorite);
-                  }}
+                  onClick={() => toggleFavorite(item)}
                   className="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                   aria-label="Add to favorites"
                 >

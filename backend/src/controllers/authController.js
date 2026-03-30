@@ -28,6 +28,7 @@ const register = async (req, res, next) => {
       deliveryNotes: user.deliveryNotes,
       preferredDeliveryType: user.preferredDeliveryType,
       preferredPaymentMethod: user.preferredPaymentMethod,
+      favorites: user.favorites || [],
       token: generateToken(user._id, user.role),
     });
   } catch (error) {
@@ -55,6 +56,7 @@ const login = async (req, res, next) => {
       deliveryNotes: user.deliveryNotes,
       preferredDeliveryType: user.preferredDeliveryType,
       preferredPaymentMethod: user.preferredPaymentMethod,
+      favorites: user.favorites || [],
       token: generateToken(user._id, user.role),
     });
   } catch (error) {

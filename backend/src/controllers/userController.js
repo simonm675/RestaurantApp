@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const MenuItem = require("../models/MenuItem");
 
 const getUsers = async (req, res, next) => {
   try {
@@ -26,6 +27,7 @@ const updateProfile = async (req, res, next) => {
       deliveryNotes,
       preferredDeliveryType,
       preferredPaymentMethod,
+      favorites,
     } = req.body;
 
     user.name = name || user.name;
@@ -58,7 +60,19 @@ const updateProfile = async (req, res, next) => {
 
     if (password) user.password = password;
 
+    if (Array.isArray(favorites)) {
+      const uniqueFavoriteIds = [...new Set(favorites.filter(Boolean).map((id) => String(id)))];
+      const validMenuItems = await MenuItem.find({ _id: { $in: uniqueFavoriteIds } }).select("_id");
+      const validIds = validMenuItems.map((item) => item._id);
+      user.favorites = validIds;
+    }
+
     await user.save();
+
+    await user.populate({
+      path: "favorites",
+      select: "name price image category description featured",
+    });
 
     return res.json({
       _id: user._id,
@@ -70,18 +84,61 @@ const updateProfile = async (req, res, next) => {
       deliveryNotes: user.deliveryNotes,
       preferredDeliveryType: user.preferredDeliveryType,
       preferredPaymentMethod: user.preferredPaymentMethod,
+      favorites: user.favorites || [],
     });
   } catch (error) {
     return next(error);
   }
 };
 
-const getMe = async (req, res) => {
-  return res.json(req.user);
+const getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select("-password")
+      .populate({ path: "favorites", select: "name price image category description featured" });
+
+    return res.json(user);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const updateFavorites = async (req, res, next) => {
+  try {
+    const { favorites } = req.body;
+
+    if (!Array.isArray(favorites)) {
+      res.status(400);
+      throw new Error("favorites must be an array");
+    }
+
+    const uniqueFavoriteIds = [...new Set(favorites.filter(Boolean).map((id) => String(id)))];
+    const validMenuItems = await MenuItem.find({ _id: { $in: uniqueFavoriteIds } }).select("_id");
+    const validIds = validMenuItems.map((item) => item._id);
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    user.favorites = validIds;
+    await user.save();
+
+    await user.populate({
+      path: "favorites",
+      select: "name price image category description featured",
+    });
+
+    return res.json({ favorites: user.favorites || [] });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = {
   getUsers,
   updateProfile,
   getMe,
+  updateFavorites,
 };
