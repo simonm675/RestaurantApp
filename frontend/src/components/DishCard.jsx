@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { Heart } from "lucide-react";
 import fallbackImage from "../assets/hero.png";
 import { useLanguage } from "../context/LanguageContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 const toMoney = (value) => Number(Number(value).toFixed(2));
 
@@ -211,11 +213,17 @@ const buildInitialSelections = (config) => {
 
 const DishCard = ({ item, onAdd, adminActions }) => {
   const { t } = useLanguage();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [configOpen, setConfigOpen] = useState(false);
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [favorite, setFavorite] = useState(false);
 
-  const optionConfig = useMemo(() => getOptionConfig(item), [item]);
-  const [selections, setSelections] = useState(() => buildInitialSelections(optionConfig));
+  useEffect(() => {
+    setFavorite(isFavorite(item._id));
+  }, [item._id, isFavorite]);
+
+    const optionConfig = useMemo(() => getOptionConfig(item), [item]);
+    const [selections, setSelections] = useState(() => buildInitialSelections(optionConfig));
 
   useEffect(() => {
     setSelections(buildInitialSelections(optionConfig));
@@ -341,6 +349,21 @@ const DishCard = ({ item, onAdd, adminActions }) => {
             )}
             {!adminActions && (
               <div className="ml-auto flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleFavorite(item);
+                    setFavorite(!favorite);
+                  }}
+                  className="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  aria-label="Add to favorites"
+                >
+                  <Heart
+                    size={20}
+                    className={favorite ? "fill-red-500 text-red-500" : "text-slate-400"}
+                    strokeWidth={2}
+                  />
+                </button>
                 <button
                   onClick={() => setConfigOpen(true)}
                   className="rounded-lg bg-red-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-700 hover:shadow-lg"
