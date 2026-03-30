@@ -29,7 +29,7 @@ const menuHighlights = [
 ];
 
 const HomePage = () => {
-  const { addToCart, totals } = useCart();
+  const { addToCart } = useCart();
   const { t } = useLanguage();
   const [featured, setFeatured] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,14 +75,8 @@ const HomePage = () => {
             <span className="rounded-full bg-white/85 px-2 sm:px-3 py-1 font-bold text-slate-800">{t("openUntil")}</span>
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-3 pt-3 sm:pt-4">
-            <Link
-              to={totals.count > 0 ? "/checkout" : "/menu"}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-amber-700 transition hover:bg-slate-50 hover:shadow-lg"
-            >
-              <span>🛒</span> {t("orderNow")}
-            </Link>
-            <Link to="/menu" className="inline-flex items-center gap-2 rounded-full border-2 border-white text-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold transition hover:bg-white/20">
-              <span>🍽️</span> {t("viewMenu")}
+            <Link to="/menu" className="inline-flex items-center gap-2 rounded-full bg-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-amber-700 transition hover:bg-slate-50 hover:shadow-lg">
+              {t("viewMenu")}
             </Link>
             <Link to="/reservierung" className="inline-flex items-center gap-2 rounded-full border-2 border-white/80 bg-black/20 text-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold transition hover:bg-black/30">
               <span>🪑</span> Tisch reservieren
