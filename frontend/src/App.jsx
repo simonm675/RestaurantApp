@@ -1,6 +1,6 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useLayoutEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import AdminRoute from "./components/AdminRoute";
 import CartDrawer from "./components/CartDrawer";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -24,6 +24,14 @@ const ImpressumPage = lazy(() => import("./pages/ImpressumPage"));
 const OrderTrackingPage = lazy(() => import("./pages/OrderTrackingPage"));
 
 function App() {
+  const { pathname } = useLocation();
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [pathname]);
+
   return (
     <LanguageProvider>
       <UIProvider>
