@@ -49,7 +49,7 @@ const HomePage = () => {
 
   return (
     <div className="space-y-12">
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700 via-red-600 to-amber-800 p-8 shadow-2xl sm:p-16">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700 via-red-600 to-amber-800 p-5 sm:p-8 md:p-12 lg:p-16 shadow-2xl">
         <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-white/15 blur-3xl" />
         <div className="absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
         <div className="pointer-events-none absolute right-4 top-4 hidden overflow-hidden rounded-2xl border border-white/40 bg-black/20 shadow-2xl ring-1 ring-amber-800/30 md:block">
@@ -59,29 +59,29 @@ const HomePage = () => {
             className="h-40 w-56 object-cover"
           />
         </div>
-        <div className="relative z-10 max-w-2xl space-y-5">
+        <div className="relative z-10 max-w-2xl space-y-3 sm:space-y-5">
           <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-white/85">🍕 Authentic Italian Pizzeria</p>
-            <h1 className="mt-2 text-5xl font-black leading-tight text-white md:text-6xl">
+            <p className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white/85">🍕 Authentic Italian Pizzeria</p>
+            <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-white">
               {t("handmadePizza")}
             </h1>
           </div>
-          <p className="text-lg text-white/90">
+          <p className="text-sm sm:text-base md:text-lg text-white/90">
             {t("enjoyPizza")}
           </p>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-white/85 px-3 py-1 font-bold text-slate-800">{t("ratings")}</span>
-            <span className="rounded-full bg-white/85 px-3 py-1 font-bold text-slate-800">{t("deliveryTime")}</span>
-            <span className="rounded-full bg-white/85 px-3 py-1 font-bold text-slate-800">{t("openUntil")}</span>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <span className="rounded-full bg-white/85 px-2 sm:px-3 py-1 font-bold text-slate-800">{t("ratings")}</span>
+            <span className="rounded-full bg-white/85 px-2 sm:px-3 py-1 font-bold text-slate-800">{t("deliveryTime")}</span>
+            <span className="rounded-full bg-white/85 px-2 sm:px-3 py-1 font-bold text-slate-800">{t("openUntil")}</span>
           </div>
-          <div className="flex flex-wrap gap-3 pt-4">
+          <div className="flex flex-wrap gap-2 sm:gap-3 pt-3 sm:pt-4">
             <Link
               to={totals.count > 0 ? "/checkout" : "/menu"}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-amber-700 transition hover:bg-slate-50 hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-amber-700 transition hover:bg-slate-50 hover:shadow-lg"
             >
               <span>🛒</span> {t("orderNow")}
             </Link>
-            <Link to="/menu" className="inline-flex items-center gap-2 rounded-full border-2 border-white text-white px-7 py-3.5 text-sm font-bold transition hover:bg-white/20">
+            <Link to="/menu" className="inline-flex items-center gap-2 rounded-full border-2 border-white text-white px-5 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold transition hover:bg-white/20">
               <span>🍽️</span> {t("viewMenu")}
             </Link>
           </div>
