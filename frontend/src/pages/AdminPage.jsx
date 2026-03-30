@@ -288,6 +288,9 @@ const AdminPage = () => {
       : activeTab === "pickup"
         ? pickupBoardOrders
         : sortedOrders;
+  const isDeliveryTab = activeTab === "delivery";
+  const isPickupTab = activeTab === "pickup";
+  const isOperationalTab = isDeliveryTab || isPickupTab;
 
   const newVisibleOrdersCount = visibleOrders.filter((order) => shouldHighlightNewOrder(order)).length;
 
@@ -518,10 +521,10 @@ const AdminPage = () => {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                    {order.orderNumber || `Bestellung #${order._id.slice(-6)}`} - {order.userId?.name || "Gast"}
+                    {order.orderNumber || `Bestellung #${order._id.slice(-6)}`} - {order.guestName || order.userId?.name || "Gast"}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {order.userId?.email || "-"} | {new Date(order.createdAt).toLocaleString("de-DE")}
+                    {new Date(order.createdAt).toLocaleString("de-DE")}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -535,34 +538,67 @@ const AdminPage = () => {
                 </div>
               </div>
 
-              <div className="mt-3 grid gap-3 text-sm text-slate-600 dark:text-slate-300 md:grid-cols-2 xl:grid-cols-4">
-                <p>
-                  <span className="font-semibold">Lieferart:</span> {order.deliveryType}
-                </p>
-                <p>
-                  <span className="font-semibold">Zahlung:</span> {order.paymentMethod}
-                </p>
-                <p>
-                  <span className="font-semibold">Telefon:</span> {order.customerPhone || "-"}
-                </p>
-                <p>
-                  <span className="font-semibold">ETA:</span>{" "}
-                  {order.estimatedReadyAt ? new Date(order.estimatedReadyAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "-"}
-                </p>
-              </div>
+              {isOperationalTab ? (
+                <div className="mt-3 grid gap-3 text-sm text-slate-600 dark:text-slate-300 md:grid-cols-2 xl:grid-cols-3">
+                  <p>
+                    <span className="font-semibold">Telefon:</span> {order.customerPhone || "-"}
+                  </p>
+                  {isDeliveryTab && (
+                    <p>
+                      <span className="font-semibold">ETA:</span>{" "}
+                      {order.estimatedReadyAt
+                        ? new Date(order.estimatedReadyAt).toLocaleTimeString("de-DE", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                        : "-"}
+                    </p>
+                  )}
+                  {isDeliveryTab && (
+                    <p>
+                      <span className="font-semibold">Kurier:</span> {order.assignedCourier || "-"}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-3 grid gap-3 text-sm text-slate-600 dark:text-slate-300 md:grid-cols-2 xl:grid-cols-4">
+                  <p>
+                    <span className="font-semibold">Lieferart:</span> {order.deliveryType}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Zahlung:</span> {order.paymentMethod}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Telefon:</span> {order.customerPhone || "-"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">ETA:</span>{" "}
+                    {order.estimatedReadyAt
+                      ? new Date(order.estimatedReadyAt).toLocaleTimeString("de-DE", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                      : "-"}
+                  </p>
+                </div>
+              )}
 
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                <span className="font-semibold">Adresse:</span> {order.address}
-              </p>
+              {(isDeliveryTab || !isOperationalTab) && (
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  <span className="font-semibold">Adresse:</span> {order.address}
+                </p>
+              )}
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{describeOrderProgress(order)}</p>
               {!!order.deliveryNotes && (
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                   <span className="font-semibold">Hinweis:</span> {order.deliveryNotes}
                 </p>
               )}
-              <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                {order.subtotal?.toFixed(2)} EUR + {order.deliveryFee?.toFixed(2)} EUR = {order.totalPrice.toFixed(2)} EUR
-              </p>
+              {!isOperationalTab && (
+                <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  {order.subtotal?.toFixed(2)} EUR + {order.deliveryFee?.toFixed(2)} EUR = {order.totalPrice.toFixed(2)} EUR
+                </p>
+              )}
 
               <ul className="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
                 {order.items.map((item, index) => (
@@ -579,67 +615,75 @@ const AdminPage = () => {
               </ul>
 
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                <select
-                  value={order.status}
-                  onChange={(event) => setOrderStatus(order._id, event.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase dark:border-slate-700 dark:bg-slate-800"
-                >
-                  {STATUS_OPTIONS.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+                {!isOperationalTab && (
+                  <>
+                    <select
+                      value={order.status}
+                      onChange={(event) => setOrderStatus(order._id, event.target.value)}
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase dark:border-slate-700 dark:bg-slate-800"
+                    >
+                      {STATUS_OPTIONS.map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
 
-                <select
-                  value={order.priority || "normal"}
-                  onChange={(event) => setOrderPriority(order._id, event.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase dark:border-slate-700 dark:bg-slate-800"
-                >
-                  {PRIORITY_OPTIONS.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+                    <select
+                      value={order.priority || "normal"}
+                      onChange={(event) => setOrderPriority(order._id, event.target.value)}
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase dark:border-slate-700 dark:bg-slate-800"
+                    >
+                      {PRIORITY_OPTIONS.map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
 
-                <div className="flex gap-2">
-                  <input
-                    value={courierDrafts[order._id] ?? order.assignedCourier ?? ""}
-                    onChange={(event) =>
-                      setCourierDrafts((prev) => ({
-                        ...prev,
-                        [order._id]: event.target.value,
-                      }))
-                    }
-                    placeholder="Kurier"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => saveCourier(order)}
-                    className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
-                  >
-                    Set
-                  </button>
-                </div>
+                {isDeliveryTab && (
+                  <>
+                    <div className="flex gap-2">
+                      <input
+                        value={courierDrafts[order._id] ?? order.assignedCourier ?? ""}
+                        onChange={(event) =>
+                          setCourierDrafts((prev) => ({
+                            ...prev,
+                            [order._id]: event.target.value,
+                          }))
+                        }
+                        placeholder="Kurier"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => saveCourier(order)}
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+                      >
+                        Set
+                      </button>
+                    </div>
 
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => bumpEta(order, 10)}
-                    className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
-                  >
-                    ETA +10
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => bumpEta(order, -10)}
-                    className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
-                  >
-                    ETA -10
-                  </button>
-                </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => bumpEta(order, 10)}
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+                      >
+                        ETA +10
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => bumpEta(order, -10)}
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+                      >
+                        ETA -10
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -717,6 +761,7 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+
 
 
 

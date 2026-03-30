@@ -192,8 +192,12 @@ const KitchenPage = () => {
 
   const onFinish = useCallback((order) => {
     if (order.status !== "preparing") return;
-    const nextStatus = order.deliveryType === "pickup" ? "ready-for-pickup" : "out-for-delivery";
-    updateOrderStatus(order, nextStatus, "Bestellung fertig");
+    updateOrderStatus(order, "ready-for-pickup", "Bestellung fertig und bereit");
+  }, [updateOrderStatus]);
+
+  const onHandOver = useCallback((order) => {
+    if (order.status !== "ready-for-pickup" || order.deliveryType !== "delivery") return;
+    updateOrderStatus(order, "out-for-delivery", "An Lieferdienst uebergeben");
   }, [updateOrderStatus]);
 
   const onToggleFullscreen = useCallback(() => {
@@ -223,11 +227,13 @@ const KitchenPage = () => {
       clickFlashId={clickFlashId}
       onStart={onStart}
       onFinish={onFinish}
+      onHandOver={onHandOver}
     />
   );
 };
 
 export default KitchenPage;
+
 
 
 

@@ -70,3 +70,4 @@ export const SkeletonKitchenBoard = ({ count = 8 }) => (
     ))}
   </div>
 );
+

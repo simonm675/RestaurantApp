@@ -14,8 +14,8 @@ const PRIORITIES = ["low", "normal", "high", "urgent"];
 
 const allowedTransitions = {
   pending: ["preparing", "cancelled"],
-  preparing: ["ready-for-pickup", "out-for-delivery", "completed", "cancelled"],
-  "ready-for-pickup": ["completed", "cancelled"],
+  preparing: ["ready-for-pickup", "completed", "cancelled"],
+  "ready-for-pickup": ["out-for-delivery", "completed", "cancelled"],
   "out-for-delivery": ["completed", "cancelled"],
   completed: [],
   cancelled: [],
@@ -69,6 +69,8 @@ const createOrder = async (req, res, next) => {
       paymentMethod,
       customerPhone,
       deliveryNotes,
+      guestName,
+      guestEmail,
     } = req.body;
 
     if (!Array.isArray(items) || items.length === 0) {
@@ -160,7 +162,26 @@ const createOrder = async (req, res, next) => {
     const estimatedMinutes = estimatePrepMinutes(itemCount, deliveryType);
     const estimatedReadyAt = new Date(Date.now() + estimatedMinutes * 60000);
 
+    const isGuestCheckout = !req.user?._id;
     const userId = req.user?._id || (await getGuestUserId());
+
+    const normalizedGuestName = String(guestName || "").trim();
+    const normalizedGuestEmail = String(guestEmail || "").trim().toLowerCase();
+    const normalizedCustomerPhone = customerPhone?.trim() || "";
+
+    if (isGuestCheckout) {
+      if (normalizedGuestName.length < 2) {
+        res.status(400);
+        throw new Error("Guest name is required");
+      }
+
+      const hasContactPhone = normalizedCustomerPhone.length > 0;
+      const hasContactMail = /.+@.+\..+/.test(normalizedGuestEmail);
+      if (!hasContactPhone && !hasContactMail) {
+        res.status(400);
+        throw new Error("Guest checkout requires phone or valid email");
+      }
+    }
 
     const order = await Order.create({
       orderNumber: buildOrderNumber(),
@@ -172,7 +193,9 @@ const createOrder = async (req, res, next) => {
       address: deliveryType === "pickup" ? "Abholung vor Ort" : address.trim(),
       deliveryType,
       paymentMethod,
-      customerPhone: customerPhone?.trim() || "",
+      customerPhone: normalizedCustomerPhone,
+      guestName: isGuestCheckout ? normalizedGuestName : "",
+      guestEmail: isGuestCheckout ? normalizedGuestEmail : "",
       deliveryNotes: deliveryNotes?.trim() || "",
       estimatedPrepMinutes: estimatedMinutes,
       estimatedReadyAt,
@@ -262,6 +285,11 @@ const updateOrderStatus = async (req, res, next) => {
       if (!possible.includes(status)) {
         res.status(400);
         throw new Error(`Invalid status transition: ${order.status} -> ${status}`);
+      }
+
+      if (status === "out-for-delivery" && order.deliveryType !== "delivery") {
+        res.status(400);
+        throw new Error("Only delivery orders can be marked as out-for-delivery");
       }
 
       order.status = status;

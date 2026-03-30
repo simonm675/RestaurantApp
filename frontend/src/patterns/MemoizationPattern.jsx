@@ -87,3 +87,4 @@ export default DishCardOptimized;
  * <Profiler id="MyComponent" onRender={onRenderCallback}>
  * </Profiler>
  */
+

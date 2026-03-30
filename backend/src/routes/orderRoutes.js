@@ -6,12 +6,12 @@ const {
   getAdminOrderSummary,
   updateOrderStatus,
 } = require("../controllers/orderController");
-const { protect, adminOnly } = require("../middleware/authMiddleware");
+const { protect, optionalProtect, adminOnly } = require("../middleware/authMiddleware");
 const { orderCreate } = require("../middleware/rateLimitMiddleware");
 
 const router = express.Router();
 
-router.post("/", orderCreate, createOrder);
+router.post("/", optionalProtect, orderCreate, createOrder);
 router.get("/", protect, getMyOrders);
 router.get("/admin/summary", protect, adminOnly, getAdminOrderSummary);
 router.get("/admin", protect, adminOnly, getAllOrders);

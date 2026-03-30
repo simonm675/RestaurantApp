@@ -1,6 +1,6 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy } from "react";
 import { Toaster } from "react-hot-toast";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import AdminRoute from "./components/AdminRoute";
 import CartDrawer from "./components/CartDrawer";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Spinner from "./components/Spinner";
 import { LanguageProvider } from "./context/LanguageContext";
+import { UIProvider } from "./context/UIContext";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const MenuPage = lazy(() => import("./pages/MenuPage"));
@@ -19,22 +20,15 @@ const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const KitchenPage = lazy(() => import("./pages/KitchenPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const ImpressumPage = lazy(() => import("./pages/ImpressumPage"));
+const OrderTrackingPage = lazy(() => import("./pages/OrderTrackingPage"));
 
 function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
   return (
     <LanguageProvider>
-      <div className="min-h-screen bg-app-gradient pb-24 text-slate-700 transition-colors dark:bg-app-gradient-dark dark:text-slate-200">
-        <Navbar
-          theme={theme}
-          onToggleTheme={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
-        />
+      <UIProvider>
+        <div className="min-h-screen bg-app-gradient pb-24 text-slate-700 transition-colors dark:bg-app-gradient-dark dark:text-slate-200">
+          <Navbar />
 
       <main className="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <Suspense fallback={<Spinner label="Seite wird geladen" />}>
@@ -43,6 +37,7 @@ function App() {
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-tracking" element={<OrderTrackingPage />} />
           <Route
             path="/profile"
             element={
@@ -53,6 +48,7 @@ function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/impressum" element={<ImpressumPage />} />
           <Route
             path="/admin"
             element={
@@ -74,15 +70,29 @@ function App() {
         </Suspense>
       </main>
 
-        <Toaster position="top-right" toastOptions={{ duration: 2600 }} />
-        <CartDrawer />
-        <MobileBottomNav />
-      </div>
+          <footer className="mx-auto mt-10 w-full max-w-6xl border-t border-slate-200/80 px-4 py-5 text-xs text-slate-600 sm:px-6 lg:px-8 dark:border-slate-700 dark:text-slate-300">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p>© {new Date().getFullYear()} Pizzeria Uno Lemfoerde</p>
+              <Link
+                to="/impressum"
+                className="font-semibold text-amber-700 hover:text-amber-800 dark:text-amber-300 dark:hover:text-amber-200"
+              >
+                Impressum
+              </Link>
+            </div>
+          </footer>
+
+          <Toaster position="top-right" toastOptions={{ duration: 2600 }} />
+          <CartDrawer />
+          <MobileBottomNav />
+        </div>
+      </UIProvider>
     </LanguageProvider>
   );
 }
 
 export default App;
+
 
 
 

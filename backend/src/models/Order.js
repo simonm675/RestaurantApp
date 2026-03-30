@@ -124,6 +124,16 @@ const orderSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    guestName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    guestEmail: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     deliveryNotes: {
       type: String,
       trim: true,
